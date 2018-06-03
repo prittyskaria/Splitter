@@ -5,6 +5,7 @@ contract Splitter {
     address public Bob;
     address public Carol;
     
+       
     mapping (address => uint) balances;
     
     uint256 public balance;
@@ -12,13 +13,14 @@ contract Splitter {
     function Splitter() public {
         Alice = msg.sender;
     }
-
-    function setAddressBob(address BobAddress) public {
+    
+   
+    function setAddressBob(address BobAddress) public{
         require(msg.sender == Alice);
-         Bob = BobAddress;
+        Bob = BobAddress;
     }
     
-    function setAddressCarol(address CarolAddress) public {
+    function setAddressCarol(address CarolAddress) public{
          require(msg.sender == Alice);
          Carol = CarolAddress;
     }
@@ -31,9 +33,9 @@ contract Splitter {
        return x.balance;
     }
    
-    function sendEther() public payable{
+    function sendEther() public payable {
         uint amountToSplit;
-        require(msg.sender == Alice && Bob != 0 && Carol!= 0);
+       require(msg.sender == Alice && Bob != 0 && Carol!= 0);
         if(address(this).balance %2 == 0){
          amountToSplit = address(this).balance/2;
         }
@@ -42,6 +44,10 @@ contract Splitter {
         }
         Bob.transfer(amountToSplit);
         Carol.transfer(amountToSplit);  
+
+	
     }
+
+    function() public payable { }
     
 }
