@@ -77,44 +77,5 @@ console.log("Carol's new balance: "+ Carol_new_balance);
 
 });
 
-
-/*it("should split ether between Bob and Carol correctly", async() => {
-let Alice = accounts[0];
-
-let etherToSplit = 4500
-let halfOfEther = etherToSplit/2;
-
-console.log("Half of Ether : " + halfOfEther);
-
-let instance = await Splitter.deployed();
-
-Bob = await instance.setAddressBob.call(accounts[1]);
-Carol = await instance.setAddressCarol.call(accounts[2]);
-
-
-balance = await instance.getBalance.call(Bob);
-let Bob_old_balance = balance.toString(10);
-
-console.log("Bob's old balance: "+ Bob_old_balance);
-
-balance = await instance.getBalance.call(Carol)
-let Carol_old_balance = balance.toString(10);
-
-console.log("Carol's old balance: "+ Carol_old_balance);
-
-await instance.sendEther({from: accounts[0], value:etherToSplit});
-
-balance = await instance.getBalance.call(Bob);
-let Bob_new_balance = balance.toString(10);
-
-balance = await instance.getBalance.call(Carol)
-let Carol_new_balance = balance.toString(10);
-
-//assert.equal(Bob_new_balance, Bob_old_balance + halfOfEther, "Bob did not get half of ether that Alice sent");
-//assert.equal(Carol_new_balance, Carol_old_balance+ halfOfEther, "Carol did not get half of ether that Alice sent");
-
-
-});
-*/
 })
 
