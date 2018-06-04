@@ -1,54 +1,35 @@
 pragma solidity ^0.4.18;
 
 contract Splitter {
-    address public Alice;
-    address public Bob;
-    address public Carol;
-
     
     mapping (address => uint) public balances;
     
-    event  FundsWithdrawn(address to, uint amount);
-    event  AliceDeposits(address B, address C, uint amount);
+    address owner;
+    
+    event  FundIsWithdrawn(address withdrawer, uint amount);
+    event  DepositIsMade(address sender, address receiver1, address receiver2, uint amount);
     
     function Splitter() public {
-        Alice = msg.sender;
+       owner = msg.sender;
     }
     
-    function sendEther(address B, address C) public payable{
+    function sendFundsToSplit(address B, address C) public payable{
         uint amountToSplit;
         uint oddBalance;
-        uint oldBobBalance;
-        uint oldCarolBalance;
         
-        require(msg.sender == Alice && msg.value > 0);
-       
+        DepositIsMade(msg.sender, B, C, msg.value);
         
-        if(B != Bob) {
-           oldBobBalance = balances[Bob];
-        }
-        
-        if(C != Carol) {
-           oldCarolBalance = balances[Carol];
-        }
-        
-        Bob = B;
-        Carol = C;
-        balances[Bob] += oldBobBalance;
-        balances[Carol] += oldCarolBalance;
-        
-        AliceDeposits(B,C,msg.value);
-        
-        if(address(this).balance %2 == 0){
+        if(msg.value %2 == 0){
          amountToSplit = msg.value/2;
         }
         else{
          amountToSplit = (msg.value - 1)/2;  
          oddBalance = 1;
         }
-       balances[Bob] += amountToSplit;
-       balances[Carol] += amountToSplit;  
-       balances[Alice] +=  oddBalance;  
+        
+       balances[B] += amountToSplit;
+       balances[C] += amountToSplit;  
+       balances[msg.sender] +=  oddBalance;  
     }
     
     function withdraw() public {
@@ -57,7 +38,7 @@ contract Splitter {
           
           if(amount > 0) {
               msg.sender.transfer(amount);
-              FundsWithdrawn(msg.sender, amount);
+              FundIsWithdrawn(msg.sender, amount);
           }
           
     }    
