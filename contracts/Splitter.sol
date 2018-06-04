@@ -1,49 +1,49 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.19;
 
 contract Splitter {
     
     mapping (address => uint) public balances;
-    
     address owner;
     
-    event  FundIsWithdrawn(address withdrawer, uint amount);
-    event  DepositIsMade(address sender, address receiver1, address receiver2, uint amount);
+    event  LogWithdrawal(address withdrawer, uint amount);
+    event  LogDeposit(address sender, address receiver1, address receiver2, uint amount);
     
     function Splitter() public {
-       owner = msg.sender;
+        owner = msg.sender;
     }
     
-    function sendFundsToSplit(address B, address C) public payable{
+    function deposit(address B, address C) public payable returns(bool success){
+        require(B!=C && B!=msg.sender && C!=msg.sender && msg.value >0);
+        
         uint amountToSplit;
         uint oddBalance;
+        LogDeposit(msg.sender,B,C,msg.value);
         
-        DepositIsMade(msg.sender, B, C, msg.value);
+        oddBalance = msg.value %2;
+        if (oddBalance > 0){
+         balances[msg.sender] +=  oddBalance; 
+         }
         
-        if(msg.value %2 == 0){
-         amountToSplit = msg.value/2;
-        }
-        else{
-         amountToSplit = (msg.value - 1)/2;  
-         oddBalance = 1;
-        }
+        amountToSplit = (msg.value - oddBalance)/2;  
+         
+        balances[B] += amountToSplit;
+        balances[C] += amountToSplit;  
         
-       balances[B] += amountToSplit;
-       balances[C] += amountToSplit;  
-       balances[msg.sender] +=  oddBalance;  
+       return true;
     }
     
-    function withdraw() public {
+    function withdraw() public returns(bool success){
+          require (balances[msg.sender] > 0);
+          
           uint amount = balances[msg.sender];
           balances[msg.sender] = 0;
+          msg.sender.transfer(amount);
+          LogWithdrawal(msg.sender, amount);
           
-          if(amount > 0) {
-              msg.sender.transfer(amount);
-              FundIsWithdrawn(msg.sender, amount);
-          }
-          
+          return true;  
     }    
     
-    function() public { }      
+    function() public  { }      
   
 }
         
