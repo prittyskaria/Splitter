@@ -4,50 +4,67 @@ contract Splitter {
     address public Alice;
     address public Bob;
     address public Carol;
+
     
-       
-    mapping (address => uint) balances;
+    mapping (address => uint) public balances;
     
-    uint256 public balance;
+    event  FundsWithdrawn(address to, uint amount);
+    event  AliceDeposits(address B, address C, uint amount);
     
     function Splitter() public {
         Alice = msg.sender;
     }
     
-   
-    function setAddressBob(address BobAddress) public{
-        require(msg.sender == Alice);
-        Bob = BobAddress;
-    }
-    
-    function setAddressCarol(address CarolAddress) public{
-         require(msg.sender == Alice);
-         Carol = CarolAddress;
-    }
-   
-    function getBalances() public view returns(uint, uint, uint, uint){
-        return (address(this).balance,Alice.balance, Bob.balance, Carol.balance);
-    } 
-
-    function getBalance(address x) public view returns(uint){
-       return x.balance;
-    }
-   
-    function sendEther() public payable {
+    function sendEther(address B, address C) public payable{
         uint amountToSplit;
-       require(msg.sender == Alice && Bob != 0 && Carol!= 0);
+        uint oddBalance;
+        uint oldBobBalance;
+        uint oldCarolBalance;
+        
+        require(msg.sender == Alice && msg.value > 0);
+       
+        
+        if(B != Bob) {
+           oldBobBalance = balances[Bob];
+        }
+        
+        if(C != Carol) {
+           oldCarolBalance = balances[Carol];
+        }
+        
+        Bob = B;
+        Carol = C;
+        balances[Bob] += oldBobBalance;
+        balances[Carol] += oldCarolBalance;
+        
+        AliceDeposits(B,C,msg.value);
+        
         if(address(this).balance %2 == 0){
-         amountToSplit = address(this).balance/2;
+         amountToSplit = msg.value/2;
         }
         else{
-         amountToSplit = (address(this).balance - 1)/2;    
+         amountToSplit = (msg.value - 1)/2;  
+         oddBalance = 1;
         }
-        Bob.transfer(amountToSplit);
-        Carol.transfer(amountToSplit);  
-
-	
+       balances[Bob] += amountToSplit;
+       balances[Carol] += amountToSplit;  
+       balances[Alice] +=  oddBalance;  
     }
-
-    function() public payable { }
     
+    function withdraw() public {
+          uint amount = balances[msg.sender];
+          balances[msg.sender] = 0;
+          
+          if(amount > 0) {
+              msg.sender.transfer(amount);
+              FundsWithdrawn(msg.sender, amount);
+          }
+          
+    }    
+               
+  
 }
+        
+        
+    
+
