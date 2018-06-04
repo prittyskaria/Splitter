@@ -61,7 +61,8 @@ contract Splitter {
           }
           
     }    
-               
+    
+    function() public payable { }      
   
 }
         
