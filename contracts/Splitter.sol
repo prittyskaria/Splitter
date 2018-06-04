@@ -43,7 +43,7 @@ contract Splitter {
           
     }    
     
-    function() public payable { }      
+    function() public { }      
   
 }
         
