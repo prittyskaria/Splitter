@@ -36,9 +36,10 @@ contract Splitter {
           require (balances[msg.sender] > 0);
           
           uint amount = balances[msg.sender];
+          LogWithdrawal(msg.sender, amount);
+
           balances[msg.sender] = 0;
           msg.sender.transfer(amount);
-          LogWithdrawal(msg.sender, amount);
           
           return true;  
     }    
